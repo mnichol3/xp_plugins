@@ -35,7 +35,7 @@ class PythonInterface:
         self.Desc = "A simple logbook."
 
         # The values of these variables can be changed to write the file
-        # # wherever you'd like.
+        # wherever you'd like.
         output_dir = Path(__file__).parent.joinpath('logbook')
         output_file = 'logbook.txt'
 
