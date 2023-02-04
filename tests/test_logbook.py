@@ -20,15 +20,15 @@ except:
 class TestFlightPhase(unittest.TestCase):
 
     def setUp(self):
-        self.aircraft = dummy_aircraft()
+        self.aircraft = dummy_aircraft.DummyAircraft()
         self.flight_phase = flight_phase.FlightPhase(self.aircraft)
 
-    def TestPointToPointFlight(self):
+    def test_flight_point2point(self):
         """Nominal airliner flight profile"""
         self.assertEqual(self.flight_phase.phase, 'PHASE_RAMP')
 
         # Push back & start
-        self.flight_phase._aircraft.set_engine_running(True)
+        self.flight_phase._aircraft.set_eng_running(True)
         self.flight_phase._aircraft.set_speed_ground(0)
         self.flight_phase._aircraft.set_parking_brake(True)
         self.flight_phase.update()

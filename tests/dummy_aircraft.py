@@ -41,7 +41,7 @@ class DummyAircraft(object):
     def set_eng_num(self, num):
         self._eng_num = num
 
-    def eng_running(self):
+    def is_engine_running(self):
         return self._eng_running
 
     def set_eng_running(self, running):
@@ -71,7 +71,7 @@ class DummyAircraft(object):
     def set_longitude(self, lon_val):
         self._longitude = lon_val
 
-    def parking_brake(self):
+    def is_parking_brake_set(self):
         return self._parking_brake
 
     def set_parking_brake(self, is_set):
@@ -79,6 +79,9 @@ class DummyAircraft(object):
 
     def speed_ground(self):
         return self._speed_ground
+
+    def is_stopped(self):
+        return self.speed_ground()
 
     def set_speed_ground(self, speed):
         self._speed_ground = speed
@@ -95,7 +98,7 @@ class DummyAircraft(object):
     def set_speed_vertical(self, speed):
         self._speed_vertical = speed
 
-    def wheels_on_ground(self):
+    def is_on_ground(self):
         return self._wheels_on_ground
 
     def set_wheels_on_ground(self, on_ground):
