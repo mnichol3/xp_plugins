@@ -1,5 +1,9 @@
+"""
+flight_log.py
+
+Class to represent a single entry in the flight logbook.
+"""
 from datetime import datetime, timedelta
-import os
 
 
 class FlightLog:

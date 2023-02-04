@@ -1,21 +1,20 @@
 """
 flight_phase.py
 
+Class containing logic to determine the phase of flight an aircraft is in.
+
+Notes
+-----
+* Aircraft state units:
+    * Altitude AGL: meters
+    * Ground speed: meters/second
+    * Speed IAS: knots
+    * Vertical speed: feet/minute
 """
 
 
 class FlightPhase(object):
-    """
-    Class containing logic to determine the phase of flight an aircraft is in.
 
-    Notes
-    -----
-    * Aircraft state units:
-        * Altitude AGL: meters
-        * Ground speed: meters/second
-        * Speed IAS: knots
-        * Vertical speed: feet/minute
-    """
     PHASE_RAMP = 'PHASE_RAMP'
     PHASE_TAXI_OUT = 'PHASE_TAXI_OUT'
     PHASE_TAKEOFF = 'PHASE_TAKEOFF'
