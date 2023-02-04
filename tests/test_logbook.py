@@ -25,6 +25,9 @@ class TestFlightPhase(unittest.TestCase):
 
     def test_flight_point2point(self):
         """Nominal airliner flight profile"""
+        self.flight_phase._aircraft.set_speed_ground(0)
+        self.flight_phase._aircraft.set_parking_brake(True)
+        self.flight_phase._aircraft.set_eng_running(False)
         self.assertEqual(self.flight_phase.phase, 'PHASE_RAMP')
 
         # Push back & start
@@ -48,7 +51,7 @@ class TestFlightPhase(unittest.TestCase):
         # Takeoff roll
         self.flight_phase._aircraft.set_speed_ias(50)
         self.flight_phase.update()
-        self.assertEqual(self.flight_phase.phase, 'PHASE_TAXI_OUT')
+        self.assertEqual(self.flight_phase.phase, 'PHASE_TAKEOFF')
 
         # Takeoff
         self.flight_phase._aircraft.set_altitude_agl(200)
@@ -100,7 +103,7 @@ class TestFlightPhase(unittest.TestCase):
         # Parked/shut down
         self.flight_phase._aircraft.set_eng_running(False)
         self.flight_phase.update()
-        self.assertEqual(self.flight_phase.phase, 'PHASE_Ramp')
+        self.assertEqual(self.flight_phase.phase, 'PHASE_RAMP')
 
 
 if __name__ == '__main__':

@@ -62,7 +62,7 @@ class FlightPhase(object):
                     self._aircraft.altitude_agl() >= 100):
                 self._phase = self.PHASE_CLIMB
 
-            elif (self._aircraft.verticalspeed() < -200 and
+            elif (self._aircraft.speed_vertical() < -200 and
                     self._aircraft.altitude_agl() < 500):
                 self._phase = self.PHASE_LANDING
 
@@ -94,9 +94,9 @@ class FlightPhase(object):
                 self._phase = self.PHASE_CLIMB
 
         elif self.phase == self.PHASE_TAXI_IN:
-            if (self._aircraft.isonground() and
-                    not self._aircraft.isenginerunning() and
-                    self._aircraft.isstopped()):
+            if (self._aircraft.is_on_ground() and
+                    not self._aircraft.is_engine_running() and
+                    self._aircraft.is_stopped()):
                 self._phase = self.PHASE_RAMP
 
             if (self._aircraft.speed_ias() > 35 and

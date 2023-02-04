@@ -81,7 +81,7 @@ class DummyAircraft(object):
         return self._speed_ground
 
     def is_stopped(self):
-        return self.speed_ground()
+        return self._speed_ground == 0
 
     def set_speed_ground(self, speed):
         self._speed_ground = speed
