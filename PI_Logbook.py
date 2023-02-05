@@ -50,12 +50,39 @@ class PythonInterface:
         return self.Name, self.Sig, self.Desc
 
     def XPluginStop(self):
+        attempt_write = True
+
         # Unregister the callback
         xp.unregisterFlightLoopCallback(self.FlightLoopCallback, 0)
 
-        # Close the file
-        #self.output_file.close()
-        self.flight_log.write(self.output_file)
+        if not self.flight_log.written:
+            if self.flight_log.destination is None:
+                fms_dest_type, fms_dest_id = Aircraft.fms_destination()
+                if fms_dest_type == xp.Nav_Airport:
+                    self.flight_log.destination = Aircraft.fms_destination()
+                else:
+                    self.flight_log.destination = Aircraft.nearest_airport()
+
+            if self.flight_log.air_time is None:
+                self.flight_log.calc_air_time()
+                if self.flight_log.air_time == 0:
+                    time_local, time_zulu = self.time_func()
+                    self.flight_log.time_on_local = time_local
+                    self.flight_log.time_on_zulu = time_zulu
+                    self.flight_log.calc_air_time()
+
+                    if self.flight_log.air_time == 0:
+                        # We must be missing an off time, so we have nothing
+                        # meaningful to write to file
+                        attempt_write = False
+
+            if self.flight_log.block_time is None:
+                self.flight_log.calc_block_time()
+                if self.flight_log.block_time == 0:
+                    self.flight_log.block_time = self.flight_log.air_time
+
+            if attempt_write:
+                self.flight_log.write(self.output_file)
 
     def XPluginEnable(self):
         return 1
@@ -71,11 +98,9 @@ class PythonInterface:
         # TODO: Case for touch-n-go
         prev_phase = self.flight_phase.phase
         curr_phase = self.flight_phase.update()
-        call_time = 3.0
+        call_time = 1.0
 
         if prev_phase != curr_phase:
-            # Increase callback frequency as things are happening
-            call_time = 1.0
             time_local, time_zulu = self.time_func()
 
             if prev_phase == 'PHASE_RAMP' and curr_phase == 'PHASE_TAXI_OUT':
@@ -89,8 +114,9 @@ class PythonInterface:
                     self.flight_log.mark_time('on', time_local, time_zulu)
                     self.flight_log.calc_air_time()
                 elif curr_phase == 'PHASE_CLIMB':
-                    # touch-and-go
-                    # How do we differentiate go-around from actual touch & go?
+                    # touch-and-go / go-around
+                    # How do we differentiate go-around/low approach from
+                    # actual touch & go where contact w/ runway is made?
                     pass
                 self.flight_log.inc_landing_count()
 
@@ -98,8 +124,13 @@ class PythonInterface:
                 self.flight_log.mark_time('in', time_local, time_zulu)
                 self.flight_log.calc_block_time()
                 self.flight_log.destination = Aircraft.nearest_airport()
+                self.flight_log.write(self.output_file)
 
-        # Return value sets next call time, in seconds
+        if curr_phase == 'PHASE_CLIMB' or curr_phase == 'PHASE_CRUISE':
+            # We can afford to decrease callback frequency in these phases
+            call_time = 5.0
+
+        # Return value sets frequency of callback, in seconds
         return call_time
 
     def get_real_time(self):
@@ -134,6 +165,14 @@ class PythonInterface:
         time_zulu = xp.getDatai("sim/time/zulu_time_sec")
 
         return time_local, time_zulu
+
+    def get_sim_elapsed_time(self):
+        """
+
+        Returns
+        -------
+
+        """
 
     @staticmethod
     def total_time(dt):

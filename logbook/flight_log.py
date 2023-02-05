@@ -42,6 +42,8 @@ class FlightLog:
         self._num_landings = 0
         self._num_landings_night = 0
 
+        self._written = False
+
     @property
     def aircraft_type(self):
         return self._acft_type
@@ -102,6 +104,26 @@ class FlightLog:
     def origin(self, origin):
         self._origin = origin
 
+    @property
+    def time_on_local(self):
+        return self._on_local
+
+    @time_on_local.setter
+    def time_on_local(self, time_on):
+        self._on_local = time_on
+
+    @property
+    def time_on_zulu(self):
+        return self._on_zulu
+
+    @time_on_zulu.setter
+    def time_on_zulu(self, time_on):
+        self._on_zulu = time_on
+
+    @property
+    def written(self):
+        return self._written
+
     def calc_air_time(self):
         #return self._calc_time_diff('air')
         self._air_time = self._calc_time_diff('air')
@@ -136,7 +158,7 @@ class FlightLog:
             time_diff = time2 - time1
         except TypeError:
             # One or more of the time variables needed have not been set
-            return
+            return 0
 
         if time_diff < 0:
             time_diff += (24 * 3600)
@@ -144,10 +166,19 @@ class FlightLog:
         return FlightLog.seconds2hours(time_diff)
 
     def get_timestrings_local(self):
-        t_out = FlightLog.seconds2hours_str(self._out_local)
-        t_off = FlightLog.seconds2hours_str(self._off_local)
-        t_on = FlightLog.seconds2hours_str(self._on_local)
-        t_in = FlightLog.seconds2hours_str(self._in_local)
+        return self._get_timestrings('local')
+
+    def get_timestrings_zulu(self):
+        return self._get_timestrings('zulu')
+
+    def _get_timestrings(self, time_var):
+        if time_var not in ['local', 'zulu']:
+            raise ValueError(f'Invalid time_var argument {time_var}')
+
+        t_out = FlightLog.seconds2hours_str(getattr(self, f'_out_{time_var}'))
+        t_off = FlightLog.seconds2hours_str(getattr(self, f'_off_{time_var}'))
+        t_on = FlightLog.seconds2hours_str(getattr(self, f'_on_{time_var}'))
+        t_in = FlightLog.seconds2hours_str(getattr(self, f'_in_{time_var}'))
 
         return t_out, t_off, t_on, t_in
 
@@ -174,9 +205,6 @@ class FlightLog:
         -------
         None.
         """
-        time_local = self.seconds2hours_str(time_local)
-        time_zulu = self.seconds2hours_str(time_zulu)
-
         match time_var:
             case 'out':
                 self._out_local = time_local
@@ -191,7 +219,7 @@ class FlightLog:
                 self._in_local = time_local
                 self._in_zulu = time_zulu
             case _:
-                raise ValueError(f'Invalid timeVar argument {time_var}')
+                raise ValueError(f'Invalid time_var argument {time_var}')
 
     @staticmethod
     def seconds2hours(seconds):
@@ -242,6 +270,44 @@ class FlightLog:
         -------
 
         """
+        hdrs = [
+            'date', 'acft_type', 'origin', 'destination',
+            'out_local', 'off_local', 'on_local', 'in_local',
+            'out_zulu', 'off_zulu', 'on_zulu', 'in_zulu',
+            'air_time', 'block_time', 'num_landings'
+        ]
+
+        local_out, local_off, local_on, local_in = self.get_timestrings_local()
+        zulu_out, zulu_off, zulu_on, zulu_in = self.get_timestrings_zulu()
+
+        log_line = f'{self._date},{self._acft_type},{self._origin},{self._dest},'
+        log_line += f'{local_out},{local_off},{local_on},{local_in},'
+        log_line += f'{zulu_out},{zulu_off},{zulu_in},{zulu_in},'
+        log_line += f'{self._air_time},{self._block_time},{self._num_landings}'
+
+        if output_file.is_file():
+            with open(output_file, 'a') as f_out:
+                f_out.write(log_line + '\n')
+        else:
+            hdr_line = ','.join(hdrs)
+            with open(output_file, 'w') as f_out:
+                f_out.write(hdr_line + '\n')
+                f_out.write(log_line + '\n')
+
+        self._written = True
+
+    def write_depr(self, output_file):
+        """
+        Write the log as a CSV.
+
+        Parameters
+        ----------
+        output_file : pathlib.Path
+
+        Returns
+        -------
+
+        """
         log_attrs = {
             'date': '_date',
             'acft_type': '_acft_type',
@@ -272,3 +338,5 @@ class FlightLog:
             with open(output_file, 'w') as f_out:
                 f_out.write(hdr_line + '\n')
                 f_out.write(log_line + '\n')
+
+        self._written = True
