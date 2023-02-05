@@ -59,6 +59,33 @@ class Aircraft:
         return xp.getDataf(cls.get_dataref("altitude_msl"))
 
     @classmethod
+    def fms_destination(cls):
+        """
+        The final entry in the FMS nav array.
+
+        Returns
+        -------
+        XPLMNavType, str
+        """
+        num_entries = xp.countFMSEntries()
+        fms_dest = xp.getFMSEntryInfo(num_entries)
+
+        return fms_dest.type, fms_dest.navAidID
+
+    @classmethod
+    def fms_origin(cls):
+        """
+        The first entry in the FMS nav array.
+
+        Returns
+        -------
+        XPLMNavType, str
+        """
+        fms_origin = xp.getFMSEntryInfo(0)
+
+        return fms_origin.type, fms_origin.navAidID
+
+    @classmethod
     def get_dataref(cls, data_str):
         d_ref = cls.DATAREFS.get(data_str)
         return xp.findDataRef(d_ref)

@@ -105,6 +105,12 @@ class TestFlightPhase(unittest.TestCase):
         self.flight_phase.update()
         self.assertEqual(self.flight_phase.phase, 'PHASE_RAMP')
 
+    def test_flight_touchngo(self):
+        pass
+
+    def test_flight_go_around(self):
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()

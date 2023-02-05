@@ -103,10 +103,12 @@ class FlightLog:
         self._origin = origin
 
     def calc_air_time(self):
-        return self._calc_time_diff('air')
+        #return self._calc_time_diff('air')
+        self._air_time = self._calc_time_diff('air')
 
     def calc_block_time(self):
-        return self._calc_time_diff('block')
+        #return self._calc_time_diff('block')
+        self._block_time = self._calc_time_diff('block')
 
     def _calc_time_diff(self, time_kword):
         """

@@ -85,7 +85,7 @@ class FlightPhase(object):
                 self._phase = self.PHASE_LANDING
 
         elif self.phase == self.PHASE_LANDING:
-            # TODO: Add case for touch-n-go
+            # TODO: Case for touch-n-go
             if self._aircraft.is_on_ground() and self._aircraft.speed_ground() < 35:
                 self._phase = self.PHASE_TAXI_IN
 
@@ -104,4 +104,4 @@ class FlightPhase(object):
                     self._aircraft.speed_vertical() > 200):
                 self._phase = self.PHASE_TAKEOFF
 
-        return self._phase == prev_phase
+        return self._phase
