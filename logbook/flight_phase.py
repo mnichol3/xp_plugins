@@ -22,6 +22,8 @@ class FlightPhase(object):
     PHASE_CRUISE = 'PHASE_CRUISE'
     PHASE_DESCENT = 'PHASE_DESCENT'
     PHASE_LANDING = 'PHASE_LANDING'
+    PHASE_SHORT_FINAL = 'PHASE_SHORT_FINAL'
+    PHASE_LANDING_ROLL = 'PHASE_LANDING_ROLL'
     PHASE_TAXI_IN = 'PHASE_TAXI_IN'
 
     def __init__(self, aircraft):
@@ -59,7 +61,7 @@ class FlightPhase(object):
 
         elif self.phase == self.PHASE_TAKEOFF:
             if (self._aircraft.speed_vertical() > 200 and
-                    self._aircraft.altitude_agl() >= 100):
+                    self._aircraft.altitude_agl() >= 500):
                 self._phase = self.PHASE_CLIMB
 
             elif (self._aircraft.speed_vertical() < -200 and
@@ -85,12 +87,32 @@ class FlightPhase(object):
                 self._phase = self.PHASE_LANDING
 
         elif self.phase == self.PHASE_LANDING:
-            # TODO: Case for touch-n-go
             if self._aircraft.is_on_ground() and self._aircraft.speed_ground() < 35:
                 self._phase = self.PHASE_TAXI_IN
 
+            elif (self._aircraft.altitude_agl() < 300 and
+                    self._aircraft.speed_vertical() < -200):
+                self._phase = self.PHASE_SHORT_FINAL
+
+            elif (self._aircraft.speed_ground() > 35 and
+                    self._aircraft.is_on_ground()):
+                self._phase = self.PHASE_LANDING_ROLL
+
             elif (self._aircraft.speed_vertical() > 200 and
-                  self._aircraft.altitude_agl() >= 500):
+                    self._aircraft.altitude_agl() >= 500):
+                self._phase = self.PHASE_CLIMB
+
+        elif self.phase == self.PHASE_SHORT_FINAL:
+            # Redudant and could possibly be combined with landing case
+            if self._aircraft.is_on_ground() and self._aircraft.speed_ground() < 35:
+                self._phase = self.PHASE_TAXI_IN
+
+            elif (self._aircraft.speed_ground() > 35 and
+                    self._aircraft.is_on_ground()):
+                self._phase = self.PHASE_LANDING_ROLL
+
+            elif (self._aircraft.speed_vertical() > 200 and
+                    self._aircraft.altitude_agl() >= 500):
                 self._phase = self.PHASE_CLIMB
 
         elif self.phase == self.PHASE_TAXI_IN:

@@ -32,6 +32,7 @@ class PythonInterface:
         self.output_file = output_dir.joinpath(output_file)
         self.flight_log = FlightLog()
         self.flight_phase = FlightPhase(Aircraft)
+        _, self.time_start = self.get_real_time()
 
         if self.time_src == 'sim':
             self.time_func = self.get_sim_time
@@ -41,8 +42,9 @@ class PythonInterface:
             raise ValueError(f'Invalid time_src value "{self.time_src}"')
 
         self.flight_log.aircraft_type = Aircraft.icao_type()
+
+        # First guess, we'll check the FMS later
         self.flight_log.origin = Aircraft.nearest_airport()
-        # TODO: try to get origin/dest from FMS
 
         # Register our FL callback with initial callback freq of 1 second
         xp.registerFlightLoopCallback(self.FlightLoopCallback, 1.0, 0)
@@ -59,7 +61,7 @@ class PythonInterface:
             if self.flight_log.destination is None:
                 fms_dest_type, fms_dest_id = Aircraft.fms_destination()
                 if fms_dest_type == xp.Nav_Airport:
-                    self.flight_log.destination = Aircraft.fms_destination()
+                    self.flight_log.destination = fms_dest_id
                 else:
                     self.flight_log.destination = Aircraft.nearest_airport()
 
@@ -95,7 +97,6 @@ class PythonInterface:
         pass
 
     def FlightLoopCallback(self, elapsedMe, elapsedSim, counter, refcon):
-        # TODO: Case for touch-n-go
         prev_phase = self.flight_phase.phase
         curr_phase = self.flight_phase.update()
         call_time = 1.0
@@ -105,25 +106,30 @@ class PythonInterface:
 
             if prev_phase == 'PHASE_RAMP' and curr_phase == 'PHASE_TAXI_OUT':
                 self.flight_log.mark_time('out', time_local, time_zulu)
+                fms_origin_type, fms_origin_id = Aircraft.fms_origin()
+                if (fms_origin_type == xp.Nav_Airport and
+                        self.flight_log.origin != fms_origin_id):
+                    self.flight_log.origin = fms_origin_id
 
             elif prev_phase == 'PHASE_TAXI_OUT' and curr_phase == 'PHASE_TAKEOFF':
                 self.flight_log.mark_time('off', time_local, time_zulu)
 
-            elif prev_phase == 'PHASE_LANDING':
-                if curr_phase == 'PHASE_TAXI_IN':
+            elif prev_phase in ['PHASE_LANDING', 'PHASE_SHORT_FINAL']:
+                if curr_phase in ['PHASE_TAXI_IN', 'PHASE_LANDING_ROLL']:
                     self.flight_log.mark_time('on', time_local, time_zulu)
                     self.flight_log.calc_air_time()
-                elif curr_phase == 'PHASE_CLIMB':
-                    # touch-and-go / go-around
-                    # How do we differentiate go-around/low approach from
-                    # actual touch & go where contact w/ runway is made?
-                    pass
-                self.flight_log.inc_landing_count()
+                    self.flight_log.inc_landing_count()
 
-            elif prev_phase == 'PHASE_TAXI_IN' and curr_phase == 'PHASE_RAMP':
+            elif prev_phase in ['PHASE_TAXI_IN', 'PHASE_RAMP']:
                 self.flight_log.mark_time('in', time_local, time_zulu)
                 self.flight_log.calc_block_time()
-                self.flight_log.destination = Aircraft.nearest_airport()
+
+                fms_dest_type, fms_dest_id = Aircraft.fms_destination()
+                if fms_dest_type == xp.Nav_Airport:
+                    self.flight_log.destination = fms_dest_id
+                else:
+                    self.flight_log.destination = Aircraft.nearest_airport()
+
                 self.flight_log.write(self.output_file)
 
         if curr_phase == 'PHASE_CLIMB' or curr_phase == 'PHASE_CRUISE':
@@ -173,6 +179,8 @@ class PythonInterface:
         -------
 
         """
+        _, now = self.get_real_time()
+        return now - self.time_start
 
     @staticmethod
     def total_time(dt):
