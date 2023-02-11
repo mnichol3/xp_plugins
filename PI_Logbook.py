@@ -22,6 +22,7 @@ class PythonInterface:
 
         # The values of these variables can be changed to write the file
         # wherever you'd like.
+        # TODO: change default dir to x-plane output dir?
         output_dir = Path(__file__).parent.joinpath('logbook')
         output_file = 'logbook.txt'
 
@@ -134,7 +135,7 @@ class PythonInterface:
 
         if curr_phase == 'PHASE_CLIMB' or curr_phase == 'PHASE_CRUISE':
             # We can afford to decrease callback frequency in these phases
-            call_time = 5.0
+            call_time = 3.0
 
         # Return value sets frequency of callback, in seconds
         return call_time

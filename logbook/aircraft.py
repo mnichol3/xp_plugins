@@ -127,7 +127,7 @@ class Aircraft:
 
     @classmethod
     def is_night(cls):
-        return xp.getDataf(cls.dataRefs.get("sunPitch")) <= 6.0
+        return xp.getDataf(cls.get_dataref("sunPitch")) <= 6.0
 
     @classmethod
     def is_on_ground(cls):
