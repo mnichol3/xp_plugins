@@ -12,7 +12,7 @@ import dummy_aircraft
 try:
     import flight_phase
 except:
-    main_dir = os.path.join('..', 'logbook')
+    main_dir = os.path.join('../..', 'logbook')
     sys.path.insert(1, main_dir)
     import flight_phase
 
