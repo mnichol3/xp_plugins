@@ -28,9 +28,9 @@ static void ReloadPluginsMenuHandler(void * mRef, void * iRef);
  * 
  */
 PLUGIN_API int XPluginStart(
-						char * outName,
-						char * outSig,
-						char * outDesc)
+                        char * outName,
+                        char * outSig,
+                        char * outDesc)
 {
 	/* First we must fill in the passed in buffers to describe our
 	 * plugin to the plugin-system. */
