@@ -2,11 +2,11 @@
 
 
 /*
-	Reload Plugin
-	Written by Sandy Barbour - 24/02/2004
+    Reload Plugin
+    Written by Sandy Barbour - 24/02/2004
 
-	This examples shows how reload plugins
-	This is handy for debugging as you don't have to stop XPlane
+    This examples shows how reload plugins
+    This is handy for debugging as you don't have to stop XPlane
 */
 
 #if IBM
@@ -32,24 +32,24 @@ PLUGIN_API int XPluginStart(
     char * outSig,
     char * outDesc)
 {
-	/* First we must fill in the passed in buffers to describe our
-	 * plugin to the plugin-system. */
-	XPLMMenuID id;
-	int	item;
+    /* First we must fill in the passed in buffers to describe our
+     * plugin to the plugin-system. */
+    XPLMMenuID id;
+    int	item;
 
-	strcpy(outName, "ReloadPlugins");
-	strcpy(outSig, "xplanesdk.sandybarbour.ReloadPlugins");
-	strcpy(outDesc, "A plugin that allows plugins to be reloaded.");
-			
-	item = XPLMAppendMenuItem(XPLMFindPluginsMenu(), "ReloadPlugins", NULL, 1);
+    strcpy(outName, "ReloadPlugins");
+    strcpy(outSig, "xplanesdk.sandybarbour.ReloadPlugins");
+    strcpy(outDesc, "A plugin that allows plugins to be reloaded.");
+            
+    item = XPLMAppendMenuItem(XPLMFindPluginsMenu(), "ReloadPlugins", NULL, 1);
 
-	id = XPLMCreateMenu("ReloadPlugins", XPLMFindPluginsMenu(), item, ReloadPluginsMenuHandler, NULL);
-	XPLMAppendMenuItem(id, "Reload", (void *)"Reload plugins",1);
+    id = XPLMCreateMenu("ReloadPlugins", XPLMFindPluginsMenu(), item, ReloadPluginsMenuHandler, NULL);
+    XPLMAppendMenuItem(id, "Reload", (void *)"Reload plugins",1);
 
-	/* We must return 1 to indicate successful initialization, otherwise we
-	 * will not be called back again. */
-	 
-	return 1;
+    /* We must return 1 to indicate successful initialization, otherwise we
+     * will not be called back again. */
+     
+    return 1;
 }
 
 /*
@@ -81,7 +81,7 @@ PLUGIN_API void XPluginDisable(void)
  */
 PLUGIN_API int XPluginEnable(void)
 {
-	return 1;
+    return 1;
 }
 
 /*
@@ -100,10 +100,10 @@ PLUGIN_API void XPluginReceiveMessage(
 
 void ReloadPluginsMenuHandler(void * mRef, void * iRef)
 {
-	if (!strcmp((char *) iRef, "Reload plugins"))
-	{
+    if (!strcmp((char *) iRef, "Reload plugins"))
+    {
         XPLMReloadPlugins();
-	}
+    }
 }
 
 
