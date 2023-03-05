@@ -28,9 +28,9 @@ static void ReloadPluginsMenuHandler(void * mRef, void * iRef);
  * 
  */
 PLUGIN_API int XPluginStart(
-						char *	outName,
-						char *	outSig,
-						char *	outDesc)
+						char * outName,
+						char * outSig,
+						char * outDesc)
 {
 	/* First we must fill in the passed in buffers to describe our
 	 * plugin to the plugin-system. */
@@ -91,9 +91,9 @@ PLUGIN_API int XPluginEnable(void)
  * 
  */
 PLUGIN_API void XPluginReceiveMessage(
-					XPLMPluginID inFromWho,
-					int			 inMessage,
-					void *		 inParam)
+                    XPLMPluginID inFromWho,
+                    int          inMessage,
+                    void *       inParam)
 {
 }
 
@@ -102,7 +102,7 @@ void ReloadPluginsMenuHandler(void * mRef, void * iRef)
 {
 	if (!strcmp((char *) iRef, "Reload plugins"))
 	{
-		XPLMReloadPlugins();
+        XPLMReloadPlugins();
 	}
 }
 
