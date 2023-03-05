@@ -1,5 +1,5 @@
 BUILDDIR	:=	./build
-SRC_BASE	:=	.
+SRC_BASE	:=	./src
 TARGET		:= ReloadPlugins
 
 SOURCES = \
