@@ -28,14 +28,14 @@ static void ReloadPluginsMenuHandler(void * mRef, void * iRef);
  * 
  */
 PLUGIN_API int XPluginStart(
-						char *		outName,
-						char *		outSig,
-						char *		outDesc)
+						char *	outName,
+						char *	outSig,
+						char *	outDesc)
 {
 	/* First we must fill in the passed in buffers to describe our
 	 * plugin to the plugin-system. */
-	XPLMMenuID	id;
-	int			item;
+	XPLMMenuID id;
+	int	item;
 
 	strcpy(outName, "ReloadPlugins");
 	strcpy(outSig, "xplanesdk.sandybarbour.ReloadPlugins");
@@ -91,9 +91,9 @@ PLUGIN_API int XPluginEnable(void)
  * 
  */
 PLUGIN_API void XPluginReceiveMessage(
-					XPLMPluginID	inFromWho,
-					int				inMessage,
-					void *			inParam)
+					XPLMPluginID inFromWho,
+					int			 inMessage,
+					void *		 inParam)
 {
 }
 
