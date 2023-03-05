@@ -3,6 +3,13 @@ PI_ReloadPlugins.py
 
 Port of Sandy Barbour's ReloadPlugin C++ plugin.
 
+!!!WARNING !!!
+After reloading, causes CTD with error:
+[XPPython3] Starting... Logging to XPPython3Log.txt
+--=={This application has crashed because of the plugin: XPPython3/win_x64/XPPython3.xpl}==--
+
+This behavior is described in the XPPython3::reloadPlugins() documentation.
+
 Matt Nicholson
 04 MAR 2023
 """
